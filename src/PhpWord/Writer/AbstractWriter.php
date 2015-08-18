@@ -352,7 +352,12 @@ abstract class AbstractWriter implements WriterInterface
             if (isset($element['isMemImage']) && $element['isMemImage']) {
                 $image = call_user_func($element['createFunction'], $element['source']);
                 ob_start();
-                call_user_func($element['imageFunction'], $image);
+                if (!empty($element['imageQuality'])) {
+                  call_user_func($element['imageFunction'], $image, NULL, $element['imageQuality']);
+                }
+                else {
+                  call_user_func($element['imageFunction'], $image);
+                }
                 $imageContents = ob_get_contents();
                 ob_end_clean();
                 $zip->addFromString($target, $imageContents);
