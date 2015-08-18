@@ -94,6 +94,13 @@ class Image extends AbstractElement
     private $imageFunc;
 
     /**
+     * Image quality
+     *
+     * @var int
+     */
+    private $imageQuality;
+
+    /**
      * Image extension
      *
      * @var string
@@ -260,6 +267,16 @@ class Image extends AbstractElement
     }
 
     /**
+     * Get image quality
+     *
+     * @return string
+     */
+    public function getImageQuality()
+    {
+        return $this->imageQuality;
+    }
+
+    /**
      * Get image extension
      *
      * @return string
@@ -368,7 +385,12 @@ class Image extends AbstractElement
                 imagesavealpha($imageResource, true);
             }
             ob_start();
-            call_user_func($this->imageFunc, $imageResource);
+            if (!empty($this->imageQuality)) {
+              call_user_func($this->imageFunc, $imageResource, NULL, $this->imageQuality);
+            }
+            else {
+              call_user_func($this->imageFunc, $imageResource);
+            }
             $imageBinary = ob_get_contents();
             ob_end_clean();
         } elseif ($this->sourceType == self::SOURCE_STRING) {
@@ -531,6 +553,7 @@ class Image extends AbstractElement
                 $this->imageCreateFunc = $this->sourceType == self::SOURCE_STRING ? 'imagecreatefromstring' : 'imagecreatefrompng';
                 $this->imageFunc = 'imagepng';
                 $this->imageExtension = 'png';
+                $this->imageQuality = 0;
                 break;
             case 'image/gif':
                 $this->imageCreateFunc = $this->sourceType == self::SOURCE_STRING ? 'imagecreatefromstring' : 'imagecreatefromgif';
@@ -542,6 +565,7 @@ class Image extends AbstractElement
                 $this->imageCreateFunc = $this->sourceType == self::SOURCE_STRING ? 'imagecreatefromstring' : 'imagecreatefromjpeg';
                 $this->imageFunc = 'imagejpeg';
                 $this->imageExtension = 'jpg';
+                $this->imageQuality = 100;
                 break;
             case 'image/bmp':
             case 'image/x-ms-bmp':
